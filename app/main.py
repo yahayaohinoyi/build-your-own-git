@@ -32,7 +32,22 @@ def cat_file(argType, sha):
 def remove_header_from_decompresses_blob(db):
     data = db.split()
     objectType, fileContent = data[0], ' '.join(data[1:])
-    print(fileContent)
+    s, ind = get_file_size(fileContent)
+    start_ind = get_starting_index_of_content(ind, fileContent)
+    print(fileContent[start_ind:])
+
+def get_file_size(fileContent):
+    size, i = '', 0
+    while fileContent[i].isdigit():
+        size += fileContent[i]
+        i += 1
+    return [size, i]
+
+def get_starting_index_of_content(ind_1, fileContent):
+    while fileContent[ind_1].isdigit():
+        ind_1 += 1
+    return ind_1
+
 
 if __name__ == "__main__":
     main()
