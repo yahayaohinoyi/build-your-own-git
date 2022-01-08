@@ -23,9 +23,7 @@ def main():
 
 def cat_file(argType, sha):
     if argType == "-p":
-        # decompressed_blob = zlib.decompress(sha)
         file = f".git/objects/{sha[:2]}/{sha[2:]}"
-        # print(file)
         with open(file, "rb") as f:
             decompressed_blob = zlib.decompress(f.read()).decode()
             print(decompressed_blob)
