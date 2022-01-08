@@ -28,7 +28,7 @@ def cat_file(argType, sha):
         file = f".git/objects/{sha[:2]}/{sha[2:]}"
         # print(file)
         with open(file, "rb") as f:
-            decompressed_blob = zlib.decompress(f.read())
+            decompressed_blob = zlib.decompress(f.read()).decode()
             print(decompressed_blob)
         return decompressed_blob
 
