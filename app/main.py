@@ -35,7 +35,7 @@ def remove_header_from_decompresses_blob(db):
     s, ind = get_file_size(fileContent)
     start_ind = get_starting_index_of_content(ind, fileContent)
     content = fileContent[start_ind:].strip()
-    print(content)
+    print(content, end="")
 
 def get_file_size(fileContent):
     size, i = '', 0
