@@ -44,6 +44,7 @@ def get_file_size(fileContent):
     return [size, i]
 
 def get_starting_index_of_content(ind_1, fileContent):
+    ind_1 += 1
     while fileContent[ind_1].isdigit():
         ind_1 += 1
     return ind_1
