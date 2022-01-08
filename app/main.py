@@ -29,7 +29,7 @@ def cat_file(argType, sha):
 
             data = decompressed_blob.split()
             objectType, fileContent = data[0], ' '.join(data[1:])
-            print(fileContent)
+            print(type(fileContent), type(fileContent[0]))
         return decompressed_blob
 
 
