@@ -25,14 +25,14 @@ def cat_file(argType, sha):
     if argType == "-p":
         file = f".git/objects/{sha[:2]}/{sha[2:]}"
         with open(file, "rb") as f:
-            decompressed_blob = zlib.decompress(f.read()).decode()
+            # print()
+            decompressed_blob = zlib.decompress(f.read()).decode('utf-8')
+            remove_header_from_decompresses_blob(decompressed_blob)
 
-            data = decompressed_blob.split()
-            objectType, fileContent = data[0], ' '.join(data[1:])
-            print(fileContent[6:])
-        return decompressed_blob
-
-
+def remove_header_from_decompresses_blob(db):
+    data = db.split()
+    objectType, fileContent = data[0], ' '.join(data[1:])
+    print(fileContent)
 
 if __name__ == "__main__":
     main()
