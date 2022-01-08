@@ -28,7 +28,7 @@ def cat_file(argType, sha):
             decompressed_blob = zlib.decompress(f.read()).decode('utf-8')
             data = decompressed_blob.split()
             objectType, fileContent = data[0], ' '.join(data[1:])
-            print(fileContent[2:])
+            print(fileContent)
         return decompressed_blob
 
 
