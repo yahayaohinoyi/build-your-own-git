@@ -1,6 +1,7 @@
 import sys
 import os
 import zlib
+import hashlib
 
 
 def main():
@@ -18,6 +19,11 @@ def main():
         argType = sys.argv[2]
         sha = sys.argv[3]
         cat_file(argType, sha)
+
+    elif command == "hash-object":
+        argType = sys.argv[2]
+        file = sys.argv[3]
+        hash_object(argType, file)
     else:
         raise RuntimeError(f"Unknown command #{command}")
 
@@ -25,8 +31,8 @@ def cat_file(argType, sha):
     if argType == "-p":
         file = f".git/objects/{sha[:2]}/{sha[2:]}"
         with open(file, "rb") as f:
-            # print()
             decompressed_blob = zlib.decompress(f.read()).decode('utf-8')
+            print(decompressed_blob)
             remove_header_from_decompresses_blob(decompressed_blob)
 
 def remove_header_from_decompresses_blob(db):
@@ -49,6 +55,34 @@ def get_starting_index_of_content(ind_1, fileContent):
     while fileContent[ind_1].isdigit():
         ind_1 += 1
     return ind_1
+
+def hash_object(argType, file):
+    if argType == '-w':
+        with open(file, 'rb') as f:
+            print(f.read())
+            compress = zlib.compress(f.read())
+            sha_1 = hashlib.sha1(compress)
+            print(sha_1.hexdigest())
+            write_object(sha_1.hexdigest(), compress, file)
+
+def write_object(hash, compress, file):
+    try:
+        dir = f'{os.getcwd()}/.git/objects/{hash[:2]}'
+        if not os.path.exists(dir):
+            os.mkdir(dir)
+        sha_file = f'{os.getcwd()}/.git/objects/{hash[:2]}/{hash[2:]}' 
+        size = os.stat(f'{os.getcwd()}/{file}').st_size
+        header = f'{size}' + ' \x00'
+        with open(sha_file, "wb") as fp: 
+            fp.write(compress)
+
+    except Exception as ex:
+        print(ex)
+    #     file = f'{os.getcwd()}/.git/objects/{hash[:2]}/{hash[2:]}'
+    #     if os.path.exists(file):
+    #         os.remove(file)
+
+    
 
 
 if __name__ == "__main__":
