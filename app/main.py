@@ -58,10 +58,10 @@ def get_starting_index_of_content(ind_1, fileContent):
 def hash_object(argType, file):
     if argType == '-w':
         with open(file, 'rb') as f:
-            print(f.read())
+            # print(f.read())
             compress = zlib.compress(f.read())
             sha_1 = hashlib.sha1(compress)
-            print(sha_1.hexdigest())
+            # print(sha_1.hexdigest())
             write_object(sha_1.hexdigest(), compress, file)
 
 def write_object(hash, compress, file):
