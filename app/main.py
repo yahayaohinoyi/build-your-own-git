@@ -32,7 +32,6 @@ def cat_file(argType, sha):
         file = f".git/objects/{sha[:2]}/{sha[2:]}"
         with open(file, "rb") as f:
             decompressed_blob = zlib.decompress(f.read()).decode('utf-8')
-            print(decompressed_blob)
             remove_header_from_decompresses_blob(decompressed_blob)
 
 def remove_header_from_decompresses_blob(db):
