@@ -77,9 +77,9 @@ def write_object(hash, compress, file):
 
     except Exception as ex:
         print(ex)
-    #     file = f'{os.getcwd()}/.git/objects/{hash[:2]}/{hash[2:]}'
-    #     if os.path.exists(file):
-    #         os.remove(file)
+        file = f'{os.getcwd()}/.git/objects/{hash[:2]}/{hash[2:]}'
+        if os.path.exists(file):
+            os.remove(file)
 
     
 
