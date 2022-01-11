@@ -1,3 +1,3 @@
-import calendar
+"""import calendar"
 
-"return 0123"
+"return 0123"""
