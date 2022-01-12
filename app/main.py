@@ -24,6 +24,12 @@ def main():
         argType = sys.argv[2]
         file = sys.argv[3]
         hash_object(argType, file)
+
+    elif command == "ls-tree":
+        argType = sys.argv[2]
+        tree_sha = sys.argv[3]
+        ls_tree(argType, tree_sha)
+
     else:
         raise RuntimeError(f"Unknown command #{command}")
 
@@ -77,13 +83,14 @@ def write_object(hash, compress, file):
         with open(sha_file, "wb") as fp: 
             fp.write(compress)
 
-
     except:
         # print(ex)
         file = f'{os.getcwd()}/.git/objects/{hash[:2]}/{hash[2:]}'
         if os.path.exists(file):
             os.remove(file)
 
+def ls_tree(argType, tree_sha):
+    pass
 
 if __name__ == "__main__":
     main()
