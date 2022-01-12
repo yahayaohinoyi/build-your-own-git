@@ -68,7 +68,6 @@ def hash_object(argType, file):
             write_object(sha_1.hexdigest(), compress, file)
             print(f"{sha_1.hexdigest()} \n")
 
-
 def write_object(hash, compress, file):
     try:
         dir = f'{os.getcwd()}/.git/objects/{hash[:2]}'
