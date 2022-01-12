@@ -79,14 +79,11 @@ def write_object(hash, compress, file):
             fp.write(compress)
 
 
-    except Exception as ex:
+    except:
         # print(ex)
         file = f'{os.getcwd()}/.git/objects/{hash[:2]}/{hash[2:]}'
         if os.path.exists(file):
             os.remove(file)
-
-    
-
 
 
 if __name__ == "__main__":
