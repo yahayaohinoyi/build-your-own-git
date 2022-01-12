@@ -62,7 +62,7 @@ def hash_object(argType, file):
             compress = zlib.compress(f.read())
             sha_1 = hashlib.sha1(compress)
             write_object(sha_1.hexdigest(), compress, file)
-            print(sha_1.hexdigest())
+            print(sha_1.hexdigest(), end="")
 
 
 def write_object(hash, compress, file):
