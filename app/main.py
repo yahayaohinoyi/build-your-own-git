@@ -21,6 +21,7 @@ def main():
         cat_file(argType, sha)
 
     elif command == "hash-object":
+        # print("problem")
         argType = sys.argv[2]
         file = sys.argv[3]
         hash_object(argType, file)
@@ -58,9 +59,13 @@ def get_starting_index_of_content(ind_1, fileContent):
 def hash_object(argType, file):
     if argType == '-w':
         with open(file, 'rb') as f:
-            # print(f.read())
-            compress = zlib.compress(f.read())
-            sha_1 = hashlib.sha1(compress)
+            size = os.stat(f'{os.getcwd()}/{file}').st_size
+            read_file = f.read()
+            header = f"blob {str(size)}\0".encode("utf-8")
+            content = read_file.decode("utf-8")
+            t = b"".join([header, read_file])
+            compress = zlib.compress(t)
+            sha_1 = hashlib.sha1(f"blob {size}\0{content}".encode("utf-8"))
             write_object(sha_1.hexdigest(), compress, file)
             print(sha_1.hexdigest(), end="")
 
@@ -71,10 +76,9 @@ def write_object(hash, compress, file):
         if not os.path.exists(dir):
             os.mkdir(dir)
         sha_file = f'{os.getcwd()}/.git/objects/{hash[:2]}/{hash[2:]}' 
-        size = os.stat(f'{os.getcwd()}/{file}').st_size
-        header = f'{size}' + ' \x00'
         with open(sha_file, "wb") as fp: 
             fp.write(compress)
+
 
     except Exception as ex:
         print(ex)
