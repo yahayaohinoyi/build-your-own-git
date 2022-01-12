@@ -21,7 +21,6 @@ def main():
         cat_file(argType, sha)
 
     elif command == "hash-object":
-        # print("problem")
         argType = sys.argv[2]
         file = sys.argv[3]
         hash_object(argType, file)
@@ -67,7 +66,7 @@ def hash_object(argType, file):
             compress = zlib.compress(t)
             sha_1 = hashlib.sha1(f"blob {size}\0{content}".encode("utf-8"))
             write_object(sha_1.hexdigest(), compress, file)
-            print(sha_1.hexdigest(), end="")
+            print(f"{sha_1.hexdigest()} \n")
 
 
 def write_object(hash, compress, file):
@@ -81,7 +80,7 @@ def write_object(hash, compress, file):
 
 
     except Exception as ex:
-        print(ex)
+        # print(ex)
         file = f'{os.getcwd()}/.git/objects/{hash[:2]}/{hash[2:]}'
         if os.path.exists(file):
             os.remove(file)
