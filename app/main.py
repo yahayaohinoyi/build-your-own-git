@@ -106,8 +106,11 @@ def ls_tree(argType, hash):
 
 def print_tree(content):
     content = content.split(b"\x00")
-    for i in range(1, len(content), 2):
-        print(content[i].split()[-1].decode())
+    for i in range(1, len(content)):
+        try:
+            print(content[i].split()[-1].decode())
+        except:
+            continue
     
 
 def filter_non_printable(_str):
