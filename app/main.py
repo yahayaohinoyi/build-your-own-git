@@ -105,7 +105,7 @@ def ls_tree(argType, hash):
         print(ex)
 
 def print_tree(content):
-    for i in range(1, 2, len(content)):
+    for i in range(1, len(content)):
         print(content[i])
 
 # def print_tree(content):
