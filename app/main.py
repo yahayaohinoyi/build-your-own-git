@@ -99,23 +99,16 @@ def ls_tree(argType, hash):
                 raise FileNotFoundError("file not found, check hash and try again")
             with open(file, 'rb') as f:
                 content = zlib.decompress(f.read())
-                print_tree(content.split(b'\x00'))
+                print_tree(content)
 
     except Exception as ex:
         print(ex)
 
 def print_tree(content):
-    for i in range(1, len(content)):
-        print(content[i])
-
-# def print_tree(content):
-#     if not content or len(content) <= 2:
-#         print("")
-#     content = content[2:]
-#     for i in range(len(sorted(content))):
-#         # print(f'{content[i]} \n'.encode("ascii", "ignore").decode("utf-8"))
-#         res = f'{filter_non_printable(content[i])} \n'
-#         print(res)
+    content = content.split(b"\x00")
+    for i in range(1, len(content), 2):
+        print(content[i].split()[-1].decode())
+    
 
 def filter_non_printable(_str):
     return ''.join(i for i in _str if ord(i)<128)
