@@ -2,6 +2,8 @@ import sys
 import os
 import zlib
 import hashlib
+import string
+import re
 
 
 def main():
@@ -89,8 +91,32 @@ def write_object(hash, compress, file):
         if os.path.exists(file):
             os.remove(file)
 
-def ls_tree(argType, tree_sha):
-    pass
+def ls_tree(argType, hash):
+    try:
+        if argType == "--name-only":
+            file = f'{os.getcwd()}/.git/objects/{hash[:2]}/{hash[2:]}'
+            if not os.path.exists(file):
+                raise FileNotFoundError("file not found, check hash and try again")
+            with open(file, 'rb') as f:
+                content = zlib.decompress(f.read()).decode(errors="replace")
+                print_tree(content.split())
+
+    except Exception as ex:
+        print(ex)
+
+def print_tree(content):
+    if not content or len(content) <= 2:
+        print("")
+    content = content[2:]
+    for i in range(len(sorted(content))):
+        # print(f'{content[i]} \n'.encode("ascii", "ignore").decode("utf-8"))
+        res = f'{filter_non_printable(content[i])} \n'
+        print(res)
+
+def filter_non_printable(_str):
+    return ''.join(i for i in _str if ord(i)<128)
+
+
 
 if __name__ == "__main__":
     main()
