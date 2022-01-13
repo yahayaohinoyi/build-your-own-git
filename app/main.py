@@ -106,7 +106,7 @@ def ls_tree(argType, hash):
 
 def print_tree(content):
     for i in range(1, 2, len(content)):
-        print(content[i].decode('utf-8').split()[-1])
+        print(content[i])
 
 # def print_tree(content):
 #     if not content or len(content) <= 2:
