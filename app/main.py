@@ -116,7 +116,5 @@ def print_tree(content):
 def filter_non_printable(_str):
     return ''.join(i for i in _str if ord(i)<128)
 
-
-
 if __name__ == "__main__":
     main()
