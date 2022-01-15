@@ -66,7 +66,7 @@ def get_starting_index_of_content(ind_1, fileContent):
         ind_1 += 1
     return ind_1
 
-def hash_object(argType, file):
+def hash_object(argType, file, caller = "main"):
     if argType == '-w':
         with open(file, 'rb') as f:
             size = os.stat(f'{file}').st_size
@@ -77,7 +77,8 @@ def hash_object(argType, file):
             compress = zlib.compress(t)
             sha_1 = hashlib.sha1(f"blob {size}\0{content}".encode("utf-8"))
             write_object(sha_1.hexdigest(), compress, file)
-            # print(f"{sha_1.hexdigest()} \n")
+            if caller == "main":
+                print(f"{sha_1.hexdigest()} \n")
             return f"{sha_1.hexdigest()} \n"
 
 def write_object(hash, compress, file):
@@ -133,7 +134,7 @@ def recur_tree(_dir):
     size = os.stat(f'{_dir}').st_size
     for node in os.listdir(_dir):
         if not is_directory(f'{_dir}/{node}'):
-            _hash = hash_object("-w", f'{_dir}/{node}')
+            _hash = hash_object("-w", f'{_dir}/{node}', caller="write_tree")
         elif node != '.git':
             _hash = recur_tree(f'{_dir}/{node}')
         children.append((_hash, node))
