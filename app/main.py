@@ -77,6 +77,7 @@ def hash_object(argType, file):
             compress = zlib.compress(t)
             sha_1 = hashlib.sha1(f"blob {size}\0{content}".encode("utf-8"))
             write_object(sha_1.hexdigest(), compress, file)
+            print(f"{sha_1.hexdigest()} \n")
             return f"{sha_1.hexdigest()} \n"
 
 def write_object(hash, compress, file):
