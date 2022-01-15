@@ -152,7 +152,12 @@ def commit_tree(children, _dir, size):
 
     tree_sha = hashlib.sha1(tree.encode()).hexdigest()
 
-    sha_file = f'{os.getcwd()}/.git/objects/{tree_sha[:2]}/{tree_sha[2:]}' 
+    sha_dir = f'{os.getcwd()}/.git/objects/{tree_sha[:2]}'
+    sha_file = f'{sha_dir}/{tree_sha[2:]}'
+
+    if not os.path.exists(sha_dir):
+        os.mkdir(sha_dir)
+
     with open(sha_file, "wb") as fp: 
         fp.write(compress)
     print(tree_sha)
