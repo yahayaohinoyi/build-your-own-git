@@ -105,8 +105,7 @@ def ls_tree(argType, hash):
             if not os.path.exists(file):
                 raise FileNotFoundError("file not found, check hash and try again")
             with open(file, 'rb') as f:
-                r = f.read()
-                content = zlib.decompress(r)
+                content = zlib.decompress(f.read())
                 print_tree(content)
 
     except Exception as ex:
