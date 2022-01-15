@@ -147,24 +147,27 @@ def recur_tree(_dir):
     return _hash
 
 
+def concat_bytes(f, s):
+    return b"".join([f, s])
+
 def commit_tree(children, _dir, size):
-    tree = f"tree {size}\x00"
+    tree = f"tree {size}\x00".encode()
     for child in children:
         mode = get_mode(f"{_dir}/{child[1]}")
         compressed_sha = zlib.compress(child[0].encode())
-        # compressed_sha = child[0]
     
         if child == children[-1]:
-            content_info = f"{mode} {child[1]}\x00{compressed_sha}"
+            content_info = concat_bytes(f"{mode} {child[1]}".encode(), compressed_sha)
 
         else:
-            content_info = f"{mode} {child[1]}\x00{compressed_sha} "
-       
-        tree += content_info
-    
-    tree_content = tree.encode()
+            content_info = concat_bytes(f"{mode} {child[1]}".encode(), compressed_sha)
 
-    tree_sha = hashlib.sha1(tree_content).hexdigest()
+       
+        tree = concat_bytes(tree, content_info)
+    
+    print(tree)
+
+    tree_sha = hashlib.sha1(tree).hexdigest()
 
     sha_dir = f'{os.getcwd()}/.git/objects/{tree_sha[:2]}'
     sha_file = f'{sha_dir}/{tree_sha[2:]}'
@@ -173,7 +176,7 @@ def commit_tree(children, _dir, size):
         os.mkdir(sha_dir)
 
     with open(sha_file, "wb") as fp: 
-        fp.write(tree_content)
+        fp.write(tree)
     return tree_sha
 
 
