@@ -160,7 +160,6 @@ def commit_tree(children, _dir, size):
 
     with open(sha_file, "wb") as fp: 
         fp.write(compress)
-    print(tree_sha)
     return tree_sha
 
 
