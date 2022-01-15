@@ -99,23 +99,26 @@ def write_object(hash, compress, file):
             os.remove(file)
 
 def ls_tree(argType, hash):
-    # try:
+    try:
         if argType == "--name-only":
             file = f'{os.getcwd()}/.git/objects/{hash[:2]}/{hash[2:]}'
             if not os.path.exists(file):
                 raise FileNotFoundError("file not found, check hash and try again")
             with open(file, 'rb') as f:
                 content = zlib.decompress(f.read())
+                print(content)
                 print_tree(content)
 
-    # except Exception as ex:
-    #     print(ex)
+    except Exception as ex:
+        print(ex)
+
+
 
 def print_tree(content):
     content = content.split(b"\x00")
     for i in range(1, len(content)):
         try:
-            print(content[i].split()[-1].decode())
+            # print(content[i].split()[-1].decode())
             pass
         except:
             continue
@@ -171,7 +174,7 @@ def commit_tree(children, _dir, size):
         os.mkdir(sha_dir)
 
     with open(sha_file, "wb") as fp: 
-        fp.write(zlib.compress(tree_content))
+        fp.write(tree_content)
     return tree_sha
 
 
