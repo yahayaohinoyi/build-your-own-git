@@ -77,7 +77,7 @@ def hash_object(argType, file):
             compress = zlib.compress(t)
             sha_1 = hashlib.sha1(f"blob {size}\0{content}".encode("utf-8"))
             write_object(sha_1.hexdigest(), compress, file)
-            print(f"{sha_1.hexdigest()} \n")
+            # print(f"{sha_1.hexdigest()} \n")
             return f"{sha_1.hexdigest()} \n"
 
 def write_object(hash, compress, file):
@@ -123,10 +123,11 @@ def print_tree(content):
 def filter_non_printable(_str):
     return ''.join(i for i in _str if ord(i)<128)
 
-# def write_tree(_dir):
-#     res = recur_tree(_dir)
-
 def write_tree(_dir):
+    res = recur_tree(_dir)
+    return res
+
+def recur_tree(_dir):
     children = []
     _hash = ""
     size = os.stat(f'{_dir}').st_size
@@ -134,7 +135,7 @@ def write_tree(_dir):
         if not is_directory(f'{_dir}/{node}'):
             _hash = hash_object("-w", f'{_dir}/{node}')
         elif node != '.git':
-            _hash = write_tree(f'{_dir}/{node}')
+            _hash = recur_tree(f'{_dir}/{node}')
         children.append((_hash, node))
 
     _hash = commit_tree(sorted(children, key=lambda x: x[-1]), _dir, size)
@@ -142,16 +143,14 @@ def write_tree(_dir):
 
 def commit_tree(children, _dir, size):
     new_line = '\n'
-    tree = f"tree {size}\0"
+    tree = f"tree {size}\0{new_line}"
     for child in children:
         mode = get_mode(f"{_dir}/{child[1]}")
         if child != children[-1]:
-            content_info = f"{mode} {child[1]}\0 {child[0]}"
+            content_info = f"{mode} {child[1]}\0 {child[0]}{new_line}"
         else:
             content_info = f"{mode} {child[1]}\0 {child[0]}{new_line}"
         tree += content_info
-
-    print(tree)
 
     compress = zlib.compress(tree.encode())
 
@@ -160,12 +159,11 @@ def commit_tree(children, _dir, size):
     sha_dir = f'{os.getcwd()}/.git/objects/{tree_sha[:2]}'
     sha_file = f'{sha_dir}/{tree_sha[2:]}'
 
-    # if not os.path.exists(sha_dir):
-    #     os.mkdir(sha_dir)
+    if not os.path.exists(sha_dir):
+        os.mkdir(sha_dir)
 
-    # with open(sha_file, "wb") as fp: 
-    #     fp.write(compress)
-    # print(tree_sha)
+    with open(sha_file, "wb") as fp: 
+        fp.write(compress)
     return tree_sha
 
 
