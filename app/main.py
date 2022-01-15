@@ -79,7 +79,7 @@ def hash_object(argType, file, caller = "main"):
             write_object(sha_1.hexdigest(), compress, file)
             if caller == "main":
                 print(f"{sha_1.hexdigest()} \n")
-            return f"{sha_1.hexdigest()} \n"
+            return f"{sha_1.hexdigest()}"
 
 def write_object(hash, compress, file):
     try:
@@ -105,12 +105,12 @@ def ls_tree(argType, hash):
             if not os.path.exists(file):
                 raise FileNotFoundError("file not found, check hash and try again")
             with open(file, 'rb') as f:
-                content = zlib.decompress(f.read())
+                r = f.read()
+                content = zlib.decompress(r)
                 print_tree(content)
 
     except Exception as ex:
         print(ex)
-
 
 
 def print_tree(content):
@@ -134,7 +134,8 @@ def recur_tree(_dir):
     children = []
     _hash = ""
     size = os.stat(f'{_dir}').st_size
-    for node in os.listdir(_dir):
+    nei = [n for n in os.listdir(_dir) if n != ".git"]
+    for node in nei:
         if not is_directory(f'{_dir}/{node}'):
             _hash = hash_object("-w", f'{_dir}/{node}', caller="write_tree")
         elif node != '.git':
@@ -150,22 +151,20 @@ def concat_bytes(f, s):
     return b"".join([f, s])
 
 def commit_tree(children, _dir, size):
-    tree = f"tree {size}\x00".encode()
+    tree = f"tree {size}\0".encode()
     for child in children:
         mode = get_mode(f"{_dir}/{child[1]}")
         compressed_sha = zlib.compress(child[0].encode())
     
         if child == children[-1]:
-            content_info = concat_bytes(f"{mode} {child[1]}".encode(), compressed_sha)
+            content_info = concat_bytes(f"{mode} {child[1]}\0".encode(), compressed_sha)
 
         else:
-            content_info = concat_bytes(f"{mode} {child[1]}".encode(), compressed_sha)
+            content_info = concat_bytes(f"{mode} {child[1]}\0".encode(), compressed_sha)
 
        
         tree = concat_bytes(tree, content_info)
     
-    # print(tree)
-
     tree_sha = hashlib.sha1(tree).hexdigest()
 
     sha_dir = f'{os.getcwd()}/.git/objects/{tree_sha[:2]}'
@@ -175,7 +174,7 @@ def commit_tree(children, _dir, size):
         os.mkdir(sha_dir)
 
     with open(sha_file, "wb") as fp: 
-        fp.write(tree)
+        fp.write(zlib.compress(tree))
     return tree_sha
 
 
