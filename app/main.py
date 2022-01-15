@@ -146,7 +146,6 @@ def recur_tree(_dir):
 
     return _hash
 
-
 def concat_bytes(f, s):
     return b"".join([f, s])
 
@@ -156,13 +155,8 @@ def commit_tree(children, _dir, size):
         mode = get_mode(f"{_dir}/{child[1]}")
         compressed_sha = zlib.compress(child[0].encode())
     
-        if child == children[-1]:
-            content_info = concat_bytes(f"{mode} {child[1]}\0".encode(), compressed_sha)
+        content_info = concat_bytes(f"{mode} {child[1]}\0".encode(), compressed_sha)
 
-        else:
-            content_info = concat_bytes(f"{mode} {child[1]}\0".encode(), compressed_sha)
-
-       
         tree = concat_bytes(tree, content_info)
     
     tree_sha = hashlib.sha1(tree).hexdigest()
