@@ -123,6 +123,9 @@ def print_tree(content):
 def filter_non_printable(_str):
     return ''.join(i for i in _str if ord(i)<128)
 
+# def write_tree(_dir):
+#     res = recur_tree(_dir)
+
 def write_tree(_dir):
     children = []
     _hash = ""
@@ -148,6 +151,8 @@ def commit_tree(children, _dir, size):
             content_info = f"{mode} {child[1]}\0 {child[0]}{new_line}"
         tree += content_info
 
+    print(tree)
+
     compress = zlib.compress(tree.encode())
 
     tree_sha = hashlib.sha1(tree.encode()).hexdigest()
@@ -155,11 +160,12 @@ def commit_tree(children, _dir, size):
     sha_dir = f'{os.getcwd()}/.git/objects/{tree_sha[:2]}'
     sha_file = f'{sha_dir}/{tree_sha[2:]}'
 
-    if not os.path.exists(sha_dir):
-        os.mkdir(sha_dir)
+    # if not os.path.exists(sha_dir):
+    #     os.mkdir(sha_dir)
 
-    with open(sha_file, "wb") as fp: 
-        fp.write(compress)
+    # with open(sha_file, "wb") as fp: 
+    #     fp.write(compress)
+    # print(tree_sha)
     return tree_sha
 
 
