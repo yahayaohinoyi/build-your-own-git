@@ -173,7 +173,7 @@ def commit_tree(children, _dir, size):
         os.mkdir(sha_dir)
 
     with open(sha_file, "wb") as fp: 
-        fp.write(tree.encode())
+        fp.write(tree_content)
     return tree_sha
 
 
