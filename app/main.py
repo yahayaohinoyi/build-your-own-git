@@ -126,6 +126,7 @@ def filter_non_printable(_str):
 
 def write_tree(_dir):
     res = recur_tree(_dir)
+    print(res)
     return res
 
 def recur_tree(_dir):
