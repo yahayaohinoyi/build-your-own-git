@@ -149,7 +149,7 @@ def commit_tree(children, _dir, size):
     for child in children:
         mode = get_mode(f"{_dir}/{child[1]}")
         if child != children[-1]:
-            content_info = f"{mode} {child[1]}\0 {child[0]}{new_line}"
+            content_info = f"{mode} {child[1]}\0 {child[0]}"
         else:
             content_info = f"{mode} {child[1]}\0 {child[0]}{new_line}"
         tree += content_info
