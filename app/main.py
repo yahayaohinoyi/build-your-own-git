@@ -118,7 +118,6 @@ def print_tree(content):
     for i in range(1, len(content)):
         try:
             print(content[i].split()[-1].decode())
-            pass
         except:
             continue
     
