@@ -5,7 +5,6 @@ import hashlib
 import string
 import re
 
-
 def main():
     # Uncomment this block to pass the first stage
     command = sys.argv[1]
@@ -31,6 +30,10 @@ def main():
         argType = sys.argv[2]
         tree_sha = sys.argv[3]
         ls_tree(argType, tree_sha)
+
+    elif command == "write-tree":
+        # argType = sys.argv[2]
+        write_tree(f'{os.getcwd()}')
 
     else:
         raise RuntimeError(f"Unknown command #{command}")
@@ -66,7 +69,7 @@ def get_starting_index_of_content(ind_1, fileContent):
 def hash_object(argType, file):
     if argType == '-w':
         with open(file, 'rb') as f:
-            size = os.stat(f'{os.getcwd()}/{file}').st_size
+            size = os.stat(f'{file}').st_size
             read_file = f.read()
             header = f"blob {str(size)}\0".encode("utf-8")
             content = read_file.decode("utf-8")
@@ -74,11 +77,13 @@ def hash_object(argType, file):
             compress = zlib.compress(t)
             sha_1 = hashlib.sha1(f"blob {size}\0{content}".encode("utf-8"))
             write_object(sha_1.hexdigest(), compress, file)
-            print(f"{sha_1.hexdigest()} \n")
+            return f"{sha_1.hexdigest()} \n"
 
 def write_object(hash, compress, file):
     try:
         dir = f'{os.getcwd()}/.git/objects/{hash[:2]}'
+        if os.path.isfile(f"{dir}/{hash[2:]}"):
+            return
         if not os.path.exists(dir):
             os.mkdir(dir)
         sha_file = f'{os.getcwd()}/.git/objects/{hash[:2]}/{hash[2:]}' 
@@ -109,12 +114,67 @@ def print_tree(content):
     for i in range(1, len(content)):
         try:
             print(content[i].split()[-1].decode())
+            pass
         except:
             continue
     
 
 def filter_non_printable(_str):
     return ''.join(i for i in _str if ord(i)<128)
+
+def write_tree(_dir):
+    children = []
+    _hash = ""
+    size = os.stat(f'{_dir}').st_size
+    for node in os.listdir(_dir):
+        if not is_directory(f'{_dir}/{node}'):
+            _hash = hash_object("-w", f'{_dir}/{node}')
+        elif node != '.git':
+            _hash = write_tree(f'{_dir}/{node}')
+        children.append((_hash, node))
+
+    _hash = commit_tree(sorted(children, key=lambda x: x[-1]), _dir, size)
+    return _hash
+
+def commit_tree(children, _dir, size):
+    new_line = '\n'
+    tree = f"tree {size}\0"
+    for child in children:
+        mode = get_mode(f"{_dir}/{child[1]}")
+        if child != children[-1]:
+            content_info = f"{mode} {child[1]}\0 {child[0]}"
+        else:
+            content_info = f"{mode} {child[1]}\0 {child[0]}{new_line}"
+        tree += content_info
+
+    compress = zlib.compress(tree.encode())
+
+    tree_sha = hashlib.sha1(tree.encode()).hexdigest()
+
+    sha_file = f'{os.getcwd()}/.git/objects/{tree_sha[:2]}/{tree_sha[2:]}' 
+    with open(sha_file, "wb") as fp: 
+        fp.write(compress)
+    print(tree_sha)
+    return tree_sha
+
+
+def is_directory(path):
+    return os.path.isdir(path)
+
+def get_mode(path):
+    if os.path.isfile(path):
+        return "100644"
+
+    if is_directory(path):
+        return "040000"
+    
+    if path[-3:] == ".sh":
+        return "100755"
+
+    if os.path.islink(path):
+        return "120000"
+
+
 
 if __name__ == "__main__":
     main()
