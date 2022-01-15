@@ -162,10 +162,10 @@ def commit_tree(children, _dir, size):
             content_info = f"{mode} {child[1]}\x00{compressed_sha} "
        
         tree += content_info
-    compress = tree
     
+    tree_content = tree.encode()
 
-    tree_sha = hashlib.sha1(tree.encode()).hexdigest()
+    tree_sha = hashlib.sha1(tree_content).hexdigest()
 
     sha_dir = f'{os.getcwd()}/.git/objects/{tree_sha[:2]}'
     sha_file = f'{sha_dir}/{tree_sha[2:]}'
@@ -174,7 +174,7 @@ def commit_tree(children, _dir, size):
         os.mkdir(sha_dir)
 
     with open(sha_file, "wb") as fp: 
-        fp.write(compress)
+        fp.write(tree_content)
     return tree_sha
 
 
