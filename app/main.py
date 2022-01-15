@@ -164,7 +164,7 @@ def commit_tree(children, _dir, size):
        
         tree = concat_bytes(tree, content_info)
     
-    print(tree)
+    # print(tree)
 
     tree_sha = hashlib.sha1(tree).hexdigest()
 
