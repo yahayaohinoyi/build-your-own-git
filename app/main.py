@@ -106,16 +106,19 @@ def ls_tree(argType, hash):
                 raise FileNotFoundError("file not found, check hash and try again")
             with open(file, 'rb') as f:
                 content = zlib.decompress(f.read())
+                print(content)
                 print_tree(content)
 
     except Exception as ex:
         print(ex)
 
+
+
 def print_tree(content):
     content = content.split(b"\x00")
     for i in range(1, len(content)):
         try:
-            print(content[i].split()[-1].decode())
+            # print(content[i].split()[-1].decode())
             pass
         except:
             continue
@@ -141,20 +144,26 @@ def recur_tree(_dir):
         children.append((_hash, node))
 
     _hash = commit_tree(sorted(children, key=lambda x: x[-1]), _dir, size)
+
     return _hash
 
+
 def commit_tree(children, _dir, size):
-    new_line = '\n'
-    tree = f"tree {size}\0{new_line}"
+    tree = f"tree {size}\x00"
     for child in children:
         mode = get_mode(f"{_dir}/{child[1]}")
-        if child != children[-1]:
-            content_info = f"{mode} {child[1]}\0 {child[0]}"
-        else:
-            content_info = f"{mode} {child[1]}\0 {child[0]}{new_line}"
-        tree += content_info
+        compressed_sha = zlib.compress(child[0].encode())
+        # compressed_sha = child[0]
+    
+        if child == children[-1]:
+            content_info = f"{mode} {child[1]}\x00{compressed_sha}"
 
+        else:
+            content_info = f"{mode} {child[1]}\x00{compressed_sha} "
+       
+        tree += content_info
     compress = zlib.compress(tree.encode())
+    
 
     tree_sha = hashlib.sha1(tree.encode()).hexdigest()
 
