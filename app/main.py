@@ -106,7 +106,6 @@ def ls_tree(argType, hash):
                 raise FileNotFoundError("file not found, check hash and try again")
             with open(file, 'rb') as f:
                 content = zlib.decompress(f.read())
-                print(content)
                 print_tree(content)
 
     except Exception as ex:
@@ -118,7 +117,7 @@ def print_tree(content):
     content = content.split(b"\x00")
     for i in range(1, len(content)):
         try:
-            # print(content[i].split()[-1].decode())
+            print(content[i].split()[-1].decode())
             pass
         except:
             continue
@@ -174,7 +173,7 @@ def commit_tree(children, _dir, size):
         os.mkdir(sha_dir)
 
     with open(sha_file, "wb") as fp: 
-        fp.write(tree_content)
+        fp.write(tree.encode())
     return tree_sha
 
 
