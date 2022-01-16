@@ -114,7 +114,8 @@ def ls_tree(argType, hash):
 
 def print_tree(content):
     content = content.split(b"\x00")
-    for i in range(1, len(content)):
+    # print(content)
+    for i in range(1, len(content) - 1):
         try:
             print(content[i].split()[-1].decode())
         except:
@@ -132,7 +133,6 @@ def write_tree(_dir):
 def recur_tree(_dir):
     children = []
     _hash = ""
-    # size = os.stat(f'{_dir}').st_size
     nei = [n for n in os.listdir(_dir) if n != ".git"]
     for node in nei:
         if not is_directory(f'{_dir}/{node}'):
@@ -150,10 +150,8 @@ def commit_tree(children, _dir):
     tree = f"".encode()
     for child in children:
         mode = get_mode(f"{_dir}/{child[1]}")
-        # compressed_sha = zlib.compress(child[0].encode())
-        compressed_sha = child[0]
     
-        content_info = concat_bytes(f"{mode} {child[1]}\0".encode(), compressed_sha.encode())
+        content_info = concat_bytes(f"{mode} {child[1]}\0".encode(), child[0].encode())
 
         tree = concat_bytes(tree, content_info)   
 
