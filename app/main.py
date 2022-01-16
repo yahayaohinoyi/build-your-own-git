@@ -132,7 +132,7 @@ def write_tree(_dir):
 def recur_tree(_dir):
     children = []
     _hash = ""
-    size = os.stat(f'{_dir}').st_size
+    # size = os.stat(f'{_dir}').st_size
     nei = [n for n in os.listdir(_dir) if n != ".git"]
     for node in nei:
         if not is_directory(f'{_dir}/{node}'):
@@ -140,24 +140,25 @@ def recur_tree(_dir):
         elif node != '.git':
             _hash = recur_tree(f'{_dir}/{node}')
         children.append((_hash, node))
-
-    _hash = commit_tree(sorted(children, key=lambda x: x[-1]), _dir, size)
-
+    _hash = commit_tree(sorted(children, key=lambda x: x[-1]), _dir)
     return _hash
 
 def concat_bytes(f, s):
     return b"".join([f, s])
 
-def commit_tree(children, _dir, size):
-    tree = f"tree {size}\0".encode()
+def commit_tree(children, _dir):
+    tree = f"".encode()
     for child in children:
         mode = get_mode(f"{_dir}/{child[1]}")
         compressed_sha = zlib.compress(child[0].encode())
     
         content_info = concat_bytes(f"{mode} {child[1]}\0".encode(), compressed_sha)
 
-        tree = concat_bytes(tree, content_info)
-    
+        tree = concat_bytes(tree, content_info)   
+
+    size = len(tree)
+    tree = concat_bytes(f"tree {size}\0".encode(), tree)
+
     tree_sha = hashlib.sha1(tree).hexdigest()
 
     sha_dir = f'{os.getcwd()}/.git/objects/{tree_sha[:2]}'
@@ -170,24 +171,21 @@ def commit_tree(children, _dir, size):
         fp.write(zlib.compress(tree))
     return tree_sha
 
-
 def is_directory(path):
     return os.path.isdir(path)
 
 def get_mode(path):
+    if path[-3:] == ".sh":
+        return "100755"
+
     if os.path.isfile(path):
         return "100644"
 
     if is_directory(path):
         return "040000"
-    
-    if path[-3:] == ".sh":
-        return "100755"
 
     if os.path.islink(path):
         return "120000"
-
-
 
 if __name__ == "__main__":
     main()
