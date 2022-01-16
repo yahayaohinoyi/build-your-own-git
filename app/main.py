@@ -150,9 +150,10 @@ def commit_tree(children, _dir):
     tree = f"".encode()
     for child in children:
         mode = get_mode(f"{_dir}/{child[1]}")
-        compressed_sha = zlib.compress(child[0].encode())
+        # compressed_sha = zlib.compress(child[0].encode())
+        compressed_sha = child[0]
     
-        content_info = concat_bytes(f"{mode} {child[1]}\0".encode(), compressed_sha)
+        content_info = concat_bytes(f"{mode} {child[1]}\0".encode(), compressed_sha.encode())
 
         tree = concat_bytes(tree, content_info)   
 
