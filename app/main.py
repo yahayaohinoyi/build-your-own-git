@@ -113,14 +113,14 @@ def ls_tree(argType, hash):
 
 
 def print_tree(content):
-    content = content.split(b"\x00")
     # print(content)
+    content = content.split(b"\x00")
+    
     for i in range(1, len(content) - 1):
         try:
             print(content[i].split()[-1].decode())
         except:
             continue
-    
 
 def filter_non_printable(_str):
     return ''.join(i for i in _str if ord(i)<128)
@@ -150,14 +150,15 @@ def commit_tree(children, _dir):
     tree = f"".encode()
     for child in children:
         mode = get_mode(f"{_dir}/{child[1]}")
+
+        compressed_sha = zlib.compress(child[0].encode())
     
-        content_info = concat_bytes(f"{mode} {child[1]}\0".encode(), child[0].encode())
+        content_info = concat_bytes(f"{mode} {child[1]}\0".encode(), compressed_sha)
 
         tree = concat_bytes(tree, content_info)   
 
     size = len(tree)
     tree = concat_bytes(f"tree {size}\0".encode(), tree)
-
     tree_sha = hashlib.sha1(tree).hexdigest()
 
     sha_dir = f'{os.getcwd()}/.git/objects/{tree_sha[:2]}'
